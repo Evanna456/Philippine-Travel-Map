@@ -29,7 +29,9 @@
     },
     components: {},
     data: function () {
-      return {};
+      return {
+        map: null,
+      };
     },
     mounted() {
       window.scrollTo(0, 0);
@@ -39,19 +41,30 @@
     computed: {},
     methods: {
       async mapInit() {
-        const response = await fetch("/Provinces.geojson");
-        const provinces = await response.json();
-
-        var map = leaflet.map("map").setView([51.505, -0.09], 13);
+        this.map = leaflet.map("map").setView([12.3, 122.78], 6);
         leaflet
           .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution:
               '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           })
-          .addTo(map);
+          .addTo(this.map);
 
-        leaflet.geoJSON(provinces).addTo(map);
+        const response = await fetch("/Provinces.geojson");
+        const provinces = await response.json();
+
+        leaflet
+          .geoJson(provinces, {
+            onEachFeature: function (feature, layer) {
+              layer.on("click", function (e) {
+                // Do whatever you want here, when the polygon is clicked.
+                alert("click");
+              });
+            },
+          })
+          .addTo(this.map);
+
+        //leaflet.geoJSON(provinces).addTo(this.map);
       },
     },
   });
