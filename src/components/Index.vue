@@ -41,30 +41,42 @@
     computed: {},
     methods: {
       async mapInit() {
-        this.map = leaflet.map("map").setView([12.3, 122.78], 6);
+        var map = this.map;
+        map = leaflet.map("map").setView([12.3, 122.78], 6);
+
         leaflet
           .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution:
               '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           })
-          .addTo(this.map);
+          .addTo(map);
 
         const response = await fetch("/Provinces.geojson");
         const provinces = await response.json();
 
+        //console.log(provinces);
+
+        var p = leaflet.geoJson(provinces).coordsToLatLngs();
+
         leaflet
           .geoJson(provinces, {
             onEachFeature: function (feature, layer) {
-              layer.on("click", function (e) {
-                // Do whatever you want here, when the polygon is clicked.
-                alert("click");
-              });
+              console.log();
+              leaflet.GeoJson.coordsToLatLngs();
+
+              /*
+            for (var it = 0; it < 10; it++) {
+              leaflet
+                .polygon()
+                .addTo(map);
+            }
+            */
             },
           })
-          .addTo(this.map);
+          .coordsToLatLngs();
 
-        //leaflet.geoJSON(provinces).addTo(this.map);
+        //leaflet.geoJSON(provinces).addTo(map);
       },
     },
   });
