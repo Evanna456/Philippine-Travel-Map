@@ -3,7 +3,11 @@
   <router-view></router-view>
 </template>
 
-<style></style>
+<style>
+  body {
+    background-color: white;
+  }
+</style>
 
 <script lang="ts">
   import { ref, defineComponent } from "vue";

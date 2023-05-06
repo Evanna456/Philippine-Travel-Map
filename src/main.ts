@@ -18,6 +18,8 @@ import VueSweetalert2 from 'vue-sweetalert2';
 
 import Index from "./components/Index.vue";
 
+import domtoimage from 'dom-to-image-more';
+
 const routes = [
     {path: '/', component: Index},
 ];
@@ -28,9 +30,14 @@ const router = createRouter({
   });
 
 const app = createApp(App);
+
+app.config.errorHandler = () => null;
+app.config.warnHandler = () => null;
+
 app.use(router);
 app.use(createMetaManager());
 app.use(jquery);
 app.use(bootstrap);
 app.use(VueSweetalert2);
+app.use(domtoimage);
 app.mount('#app');

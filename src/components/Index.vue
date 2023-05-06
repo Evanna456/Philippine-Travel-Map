@@ -2,15 +2,21 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-12" align="center">
-        <h2>Philippine Travel Map</h2>
-        <p>Score: {{ score }}</p>
-        <div id="map"></div>
+        <button class="btn btn-primary" v-on:click="download">Download</button>
+        <div id="my-travel">
+          <h2>Philippine Travel Map</h2>
+          <p>Score: {{ score }}</p>
+          <div id="map"></div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+  #my-travel {
+    background-color: white;
+  }
   #map {
     height: 700px;
   }
@@ -20,6 +26,7 @@
   import { ref, defineComponent } from "vue";
   import { useMeta } from "vue-meta";
   import $ from "jquery";
+  import domtoimage from "dom-to-image-more";
 
   import "leaflet/dist/leaflet.css";
   import leaflet from "leaflet/dist/leaflet.js";
@@ -34,7 +41,7 @@
     components: {},
     data: function () {
       return {
-        map: null,
+        map: leaflet,
         score: 0,
       };
     },
@@ -46,9 +53,9 @@
     updated() {},
     computed: {},
     methods: {
-      async mapInit() {
-        var map = this.map;
-        map = leaflet.map("map").setView([12.3, 122.78], 6);
+      async mapInit(): Promise<void> {
+        var self = this;
+        self.map = leaflet.map("map").setView([12.3, 122.78], 6);
 
         leaflet
           .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -56,12 +63,12 @@
             attribution:
               '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           })
-          .addTo(map);
+          .addTo(self.map);
 
         const response = await fetch("/Provinces.geojson");
         const provinces = await response.json();
 
-        leaflet.geoJSON(provinces).addTo(map);
+        leaflet.geoJSON(provinces).addTo(self.map);
       },
       polygonClick() {
         var self = this;
@@ -85,6 +92,21 @@
             }
           });
         });
+      },
+      download(): void {
+        var self = this;
+        self.map.setView([12.3, 122.78], 6);
+
+        setTimeout(function () {
+          domtoimage
+            .toJpeg(document.getElementById("my-travel"), { quality: 0.95 })
+            .then(function (dataUrl) {
+              var link = document.createElement("a");
+              link.download = "mytravelmap.jpg";
+              link.href = dataUrl;
+              link.click();
+            });
+        }, 2000);
       },
     },
   });
