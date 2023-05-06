@@ -9,6 +9,10 @@
     "noImplicitAny": false,
     "allowJs": true,
   },
+  "types": [
+    "jquery",
+    "vue-sweetalert2"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

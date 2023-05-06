@@ -11,6 +11,10 @@ import { createMetaManager } from "vue-meta";
           **/
 import "bootstrap/dist/css/bootstrap.min.css";
 import bootstrap from 'bootstrap/dist/js/bootstrap.min.js';
+import jquery from 'jquery/dist/jquery.min.js';
+
+import 'sweetalert2/dist/sweetalert2.min.css';
+import VueSweetalert2 from 'vue-sweetalert2';
 
 import Index from "./components/Index.vue";
 
@@ -26,5 +30,7 @@ const router = createRouter({
 const app = createApp(App);
 app.use(router);
 app.use(createMetaManager());
+app.use(jquery);
 app.use(bootstrap);
+app.use(VueSweetalert2);
 app.mount('#app');
