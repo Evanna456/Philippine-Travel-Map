@@ -1,7 +1,6 @@
 ## Philippine-Travel-Map
 
-A Travel Map with scoring functionality 
-same with this one https://my-philippines-travel-level.com/
+A Travel Map with scoring functionality. Inspired by https://my-philippines-travel-level.com/
 
 > Under Construction.
 
