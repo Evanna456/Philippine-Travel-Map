@@ -10,6 +10,55 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-lg-12" align="center">
+        <div
+          class="modal fade"
+          id="poly-modal"
+          tabindex="-1"
+          aria-labelledby="poly-modal"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="poly-modal">Modal title</h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  v-on:click="colorPolygon('lived')"
+                >
+                  I lived here
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  v-on:click="colorPolygon('traveled')"
+                >
+                  I traveled here
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  v-on:click="colorPolygon('stayed')"
+                >
+                  I stayed here
+                </button>
+              </div>
+              <div class="modal-footer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,6 +68,10 @@
   }
   #map {
     height: 700px;
+  }
+  .btn {
+    margin-top: 3px;
+    width: 100%;
   }
 </style>
 
@@ -32,6 +85,7 @@
   import leaflet from "leaflet/dist/leaflet.js";
 
   import Swal from "sweetalert2";
+  import bootstrap from "bootstrap/dist/js/bootstrap.js";
 
   export default defineComponent({
     name: "Index",
@@ -43,6 +97,8 @@
       return {
         map: leaflet,
         score: 0,
+        my_modal: bootstrap.modal,
+        poly: "",
       };
     },
     mounted() {
@@ -67,31 +123,28 @@
 
         const response = await fetch("/Provinces.geojson");
         const provinces = await response.json();
-
         leaflet.geoJSON(provinces).addTo(self.map);
       },
       polygonClick() {
         var self = this;
         $("#map").on("click", ".leaflet-interactive", function () {
-          var poly = this;
-          Swal.fire({
-            title: "",
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: "I stayed in there",
-            denyButtonText: "I traveled in there",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $(poly).css("fill", "green");
-              $(poly).css("fill-opacity", "1");
-              self.score = self.score + 20;
-            } else if (result.isDenied) {
-              $(poly).css("fill", "yellow");
-              $(poly).css("fill-opacity", "1");
-              self.score = self.score + 10;
-            }
+          self.poly = this;
+          self.my_modal = new bootstrap.Modal("#poly-modal", {
+            keyboard: false,
           });
+          self.my_modal.show();
         });
+      },
+      colorPolygon(status) {
+        var self = this;
+        if (status == "lived") {
+          $(self.poly).css("fill", "red");
+          $(self.poly).css("fill-opacity", "1");
+        } else {
+          $(self.poly).css("fill", "yellow");
+          $(self.poly).css("fill-opacity", "1");
+        }
+        self.my_modal.hide();
       },
       download(): void {
         var self = this;

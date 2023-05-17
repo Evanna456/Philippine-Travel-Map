@@ -12,7 +12,8 @@
   "types": [
     "jquery",
     "vue-sweetalert2",
-    "dom-to-image-more"
+    "dom-to-image-more",
+    "bootstrap"
   ],
   "references": [
     {

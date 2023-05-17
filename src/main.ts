@@ -10,8 +10,8 @@ import { createMetaManager } from "vue-meta";
  *Still waiting for bootstrap-vue 3
           **/
 import "bootstrap/dist/css/bootstrap.min.css";
-import bootstrap from 'bootstrap/dist/js/bootstrap.min.js';
-import jquery from 'jquery/dist/jquery.min.js';
+import bootstrap from 'bootstrap/dist/js/bootstrap.js';
+import jquery from 'jquery/dist/jquery.slim.js';
 
 import 'sweetalert2/dist/sweetalert2.min.css';
 import VueSweetalert2 from 'vue-sweetalert2';
