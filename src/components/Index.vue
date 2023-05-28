@@ -22,7 +22,7 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5" id="poly-modal">Modal title</h1>
+                <h1 class="modal-title fs-5" id="poly-modal"></h1>
                 <button
                   type="button"
                   class="btn-close"
@@ -34,21 +34,21 @@
                 <button
                   type="button"
                   class="btn btn-primary"
-                  v-on:click="colorPolygon('lived')"
+                  v-on:click="colorPoly('lived')"
                 >
                   I lived here
                 </button>
                 <button
                   type="button"
                   class="btn btn-primary"
-                  v-on:click="colorPolygon('traveled')"
+                  v-on:click="colorPoly('traveled')"
                 >
                   I traveled here
                 </button>
                 <button
                   type="button"
                   class="btn btn-primary"
-                  v-on:click="colorPolygon('stayed')"
+                  v-on:click="colorPoly('stayed')"
                 >
                   I stayed here
                 </button>
@@ -80,10 +80,8 @@
   import { useMeta } from "vue-meta";
   import $ from "jquery";
   import domtoimage from "dom-to-image-more";
-
   import "leaflet/dist/leaflet.css";
   import leaflet from "leaflet/dist/leaflet.js";
-
   import Swal from "sweetalert2";
   import bootstrap from "bootstrap/dist/js/bootstrap.js";
 
@@ -93,18 +91,27 @@
       useMeta({ title: "Philippine Travel Map" });
     },
     components: {},
+    props: {
+      Map: leaflet,
+      Score: {
+        type: Number,
+        default: 0,
+      },
+      My_Modal: bootstrap.modal,
+      Poly: Object,
+    },
     data: function () {
       return {
-        map: leaflet,
-        score: 0,
-        my_modal: bootstrap.modal,
-        poly: "",
+        map: this.Map,
+        score: this.Score,
+        my_modal: this.My_Modal,
+        poly: this.Poly,
       };
     },
     mounted() {
       window.scrollTo(0, 0);
       this.mapInit();
-      this.polygonClick();
+      this.polyClick();
     },
     updated() {},
     computed: {},
@@ -112,7 +119,6 @@
       async mapInit(): Promise<void> {
         var self = this;
         self.map = leaflet.map("map").setView([12.3, 122.78], 6);
-
         leaflet
           .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
@@ -120,14 +126,14 @@
               '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           })
           .addTo(self.map);
-
-        const response = await fetch("/Provinces.geojson");
-        const provinces = await response.json();
+        self.map.doubleClickZoom.disable();
+        var response = await fetch("/Provinces.geojson");
+        var provinces = await response.json();
         leaflet.geoJSON(provinces).addTo(self.map);
       },
-      polygonClick() {
+      polyClick() {
         var self = this;
-        $("#map").on("click", ".leaflet-interactive", function () {
+        $("#map").on("dblclick", ".leaflet-interactive", function () {
           self.poly = this;
           self.my_modal = new bootstrap.Modal("#poly-modal", {
             keyboard: false,
@@ -135,14 +141,20 @@
           self.my_modal.show();
         });
       },
-      colorPolygon(status) {
+      colorPoly(status) {
         var self = this;
         if (status == "lived") {
-          $(self.poly).css("fill", "red");
-          $(self.poly).css("fill-opacity", "1");
-        } else {
-          $(self.poly).css("fill", "yellow");
-          $(self.poly).css("fill-opacity", "1");
+          $(self.poly).css("fill", "#ff0000");
+          $(self.poly).css("fill-opacity", "0.5");
+          self.score = self.score + 50;
+        } else if (status == "traveled") {
+          $(self.poly).css("fill", "#ffff00");
+          $(self.poly).css("fill-opacity", "0.5");
+          self.score = self.score + 10;
+        } else if (status == "stayed") {
+          $(self.poly).css("fill", "#0000ff");
+          $(self.poly).css("fill-opacity", "0.5");
+          self.score = self.score + 30;
         }
         self.my_modal.hide();
       },
@@ -152,7 +164,7 @@
 
         setTimeout(function () {
           domtoimage
-            .toJpeg(document.getElementById("my-travel"), { quality: 0.95 })
+            .toJpeg(document.getElementById("my-travel"), { quality: 0.9 })
             .then(function (dataUrl) {
               var link = document.createElement("a");
               link.download = "mytravelmap.jpg";
